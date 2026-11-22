@@ -1,0 +1,102 @@
+---
+layout: runbook
+title: '#4471 · what it shows: two causes, one ticket'
+owner: Aleksandra Kwiecien
+status: known
+reviewed: 2026-11-22
+signature: v1.eyJzdG9yeSI6Im9mZiIsInN1YiI6IjQ2OTgiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdCI6MTc5NTM2OTkzNCwiZXhwIjoxNzk1NDU2MzM0fQ.kJR9-R4zuKuhEdz5ObbO4_hfxP90jO8-HcXn5D5Q7Ag
+---
+
+<script>
+  import SplitTable from '#lib/kb/SplitTable.svelte';
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) says one issue, one fix queued. Its own table says two causes, and
+flags the second as having no ticket. Each cause needs a fix of its own. Nobody mis-read
+anything: the merge rule never reads a body, so a ticket can only ever be as sharp as its
+subject lines, and these subject lines are shared across both causes.
+
+<Callout kind="warn">
+Fixing the parser closes most of this ticket, leaves the second cause open, and can make it
+worse.
+</Callout>
+
+## The causes, and the ticket each one has
+
+<SplitTable ticket={4471} />
+
+Every number above is counted by the component from the desk's own export, with the desk's own
+rules, as it was exported. Nothing in the words below restates one.
+
+One ticket per cause, and which ticket covers which:
+
+- `parser`, **379** reports in #4471 — [issue #1](https://github.com/BlackShaira/kurs-s01e03/issues/1) in this repo. On the kb this cause is #4471 itself, because `ticketCause` reads a ticket's cause off its reports.
+- `hint`, **33** reports in #4471 — [issue #2](https://github.com/BlackShaira/kurs-s01e03/issues/2) in this repo. This is the cause that had no ticket of its own.
+
+`causes.ts` declares two causes and no more: `export const CAUSES = ['parser', 'hint']`. Those
+two rows are every report in #4471, 379 and 33, and they add to the 412 the ticket holds.
+
+## Why the hint cause survives the parser fix
+
+`booking-v2` prints `DD/MM/YYYY` under its date field, and `booking-v3` prints `MM/DD/YYYY`. The
+three tenants on `booking-v3` all write the day first. Their people type the month first, because
+the hint tells them to, and the form stores it the tenant's way. Every report in this cause came
+through the form and through no other channel.
+
+So these dates are wrong in the opposite direction from the rest of the ticket. Teach the parser
+to read each tenant's order and this group gets read the tenant's way too, which is not the way it
+was typed. The hint and the reader have to agree first: either the hint matches how the form
+reads, or the form reads what the hint promised.
+
+## The one-day reports, counted inside `parser`
+
+Five reports describe a date one day out, not a swap. A swap turns 7 April into 4 July: the two
+numbers trade places. These have no second number to trade:
+
+- `R-41202` — the invite says Tuesday 12 May, the calendar says Monday 11 May. 12 and 11 are not
+  each other's transpose.
+- `R-41620` — Tuesday 6 October showed as Monday.
+- `R-41344` — the client in Lisbon got Tuesday, the client in Toronto got Monday, for one meeting.
+- `R-41209` — every booking in June is one day off, and only June.
+- `R-41236` — the invite arrived before the booking was made.
+
+They are not a third cause, and they get no ticket of their own, because the kb does not file them
+as one. `causeOf` reads the tenant and the channel and never the words, so it files all five under
+`parser`. The desk had already read them differently and kept the list in `desk-notes.json`, and
+`readAs` counts them where they are filed and footnotes them there. That is what the table above
+prints. Two timezones disagreeing about which day it is, and one month behaving differently from
+the others, point at an offset. Whoever fixes the parser will still see these five.
+
+## What the ticket's own table already shows
+
+The incident page claims one cause in its words. Its own table, built from the data at render
+time, prints two, and flags the second as *not this ticket — no ticket of its own*. It has been
+doing that since before this page existed. The table was right and the words were not:
+
+<CauseTable ticket={4471} />
+
+## What to do
+
+1. Fix the two causes in two changes, not one. #4471 stays the parser ticket, and its fix closes
+   the `parser` row apart from the five one-day reports counted inside it.
+2. Ship the `hint` fix in the same release as the parser fix. On its own, each of the two moves
+   that group from wrong to differently wrong.
+3. Leave the reports where they are. The ticket a report belongs to is `mergedInto`, and moving a
+   report out of #4471 would take it out of the desk's view of #4471 altogether. Both causes are
+   counted here against the export exactly as it was exported.
+4. Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges on the subject line alone and
+   accepts that one bug can land in several tickets. The reverse happened here. A decision is
+   never edited once accepted, so this needs a new record, not a correction of that one.
+
+## What this page does not settle
+
+- Which offset moves the five one-day reports. They name two timezones and one month; that is
+  enough to tell them apart from a swap, not enough to name their cause.
+- Whether more reports belong with those five. The list is the desk's own. Pattern matching over
+  the bodies finds four of them and misses `R-41236`, so the real number is a question for
+  whoever reads every body, not for a regular expression.
+
+<RenderStamp {signature} />

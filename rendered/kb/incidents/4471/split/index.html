@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#4471 · what it shows: two causes, one ticket · support kb</title>
+<style>
+:root {
+  --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #e3e0d8;
+  --accent: #2f6f5e; --warn: #b4501f; --warn-bg: #fbeee6; --note-bg: #eef5f2;
+  --mono: ui-monospace, 'Cascadia Code', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #171716; --fg: #ecebe6; --muted: #9c9a93; --line: #34332f;
+    --accent: #6fbfa6; --warn: #f0905d; --warn-bg: #3a2418; --note-bg: #1d2c27;
+  }
+}
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+.kb table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.92rem; }
+.kb th, .kb td { border-bottom: 1px solid var(--line); padding: 0.35rem 0.5rem; text-align: left; }
+.kb code { font-family: var(--mono); font-size: 0.88em; }
+.kb a { color: var(--accent); }
+.kb { max-width: 760px; margin: 0 auto; padding: 2rem 16px 4rem; }
+.crumb { font: 0.8rem var(--mono); text-decoration: none; color: var(--muted); }
+h1 { margin: 0.25rem 0 0.5rem; line-height: 1.2; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; color: var(--muted); font-size: 0.85rem; margin: 0; }
+.status { border: 1px solid var(--line); border-radius: 99px; padding: 0 0.6rem; }
+.stale { color: var(--warn); font-weight: 600; }
+.banner { background: var(--warn-bg); color: var(--warn); padding: 0.6rem 1rem; border-radius: 6px; }
+footer { margin-top: 3rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+aside { border-left: 4px solid var(--accent); padding: 0.5rem 1rem; margin: 1rem 0; background: var(--note-bg); }
+aside.warn { border-color: var(--warn); background: var(--warn-bg); }
+.sum { font-size: 1.1rem; }
+.n { text-align: right; font-variant-numeric: tabular-nums; }
+.muted, .tags, .note { color: var(--muted); font-size: 0.85em; }
+.wrong td { background: var(--warn-bg); }
+.wrong td:last-child { color: var(--warn); font-weight: 600; }
+.stamp { margin: 2rem 0 0; font: 0.85rem var(--mono); color: var(--muted); }
+.stamp b { color: var(--accent); letter-spacing: 0.04em; }
+.stamp.missing { color: var(--warn); }
+.subset td { background: var(--note-bg); }
+</style>
+</head>
+<body>
+<div class="kb">
+<header>
+<a class="crumb" href="/kb">support desk · kb</a>
+<h1>#4471 · what it shows: two causes, one ticket</h1>
+<p class="meta"><span>owner <b>Aleksandra Kwiecien</b></span><span class="status known">known</span><span>reviewed 2026-11-22 · 0 days ago</span></p>
+</header>
+<main>
+<p><a href="/kb/incidents/4471">#4471</a> says one issue, one fix queued. Its own table says two causes, and flags the second as having no ticket. Each cause needs a fix of its own. Nobody mis-read anything: the merge rule never reads a body, so a ticket can only ever be as sharp as its subject lines, and these subject lines are shared across both causes.</p>
+<aside class="warn">Fixing the parser closes most of this ticket, leaves the second cause open, and can make it worse.</aside>
+<h2>The causes, and the ticket each one has</h2>
+<p class="sum"><strong>412</strong> reports merged into #4471 · <strong>2</strong> causes · every report counted once</p>
+<table><thead><tr><th>cause</th><th>reports</th><th>ticket</th><th>what it is</th><th>channels</th><th>tenants</th><th>seen</th></tr></thead><tbody>
+<tr><td><code>parser</code></td><td class="n">379</td><td>#4471</td><td>the shared parser reads every date month first</td><td class="muted">app ×204 · email ×150 · form ×25</td><td class="n">11</td><td class="muted">2026-04-01 → 2026-10-04</td></tr>
+<tr><td><code>hint</code></td><td class="n">33</td><td>no ticket of its own on the kb</td><td>booking-v3's date hint says MM/DD/YYYY and the form reads it the tenant's way</td><td class="muted">form ×33</td><td class="n">3</td><td class="muted">2026-04-17 → 2026-09-22</td></tr>
+<tr class="subset"><td><code>one-day</code></td><td class="n">5</td><td>counted under <code>parser</code></td><td>the date moves by one day, which is no swap at all</td><td class="muted">email ×3 · app ×2</td><td class="n">5</td><td class="muted">2026-04-02 → 2026-10-04</td></tr>
+</tbody></table>
+<p class="note">The <code>one-day</code> row is a subset of the row it sits under, not a share of its own, so the cause rows are what add up. Those reports are in the right ticket and read the wrong way: <code>readAs</code> counts them where they are filed and footnotes them there, and the desk keeps the list in <code>desk-notes.json</code>.</p>
+<p class="note">Intake's own tag disagrees with the cause the report belongs to in <strong>38</strong> of these 412 reports, because intake guesses from the reporter's browser and the cause depends on the tenant. Counting by <code>meta.intakeTag</code> gives the wrong number for every row above.</p>
+<p class="note">The export ships 427 report objects for 412 reports: its pages overlap, so some arrive twice. Every count here is after <code>uniqueById</code>.</p>
+<p>Every number above is counted by the component from the desk's own export, with the desk's own rules, as it was exported. Nothing in the words below restates one.</p>
+<p>One ticket per cause, and which ticket covers which:</p>
+<ul><li><code>parser</code>, <strong>379</strong> reports in #4471 — <a href="https://github.com/BlackShaira/kurs-s01e03/issues/1">issue #1</a> in this repo. On the kb this cause is #4471 itself, because <code>ticketCause</code> reads a ticket's cause off its reports.</li><li><code>hint</code>, <strong>33</strong> reports in #4471 — <a href="https://github.com/BlackShaira/kurs-s01e03/issues/2">issue #2</a> in this repo. This is the cause that had no ticket of its own.</li></ul>
+<p><code>causes.ts</code> declares two causes and no more: <code>export const CAUSES = ['parser', 'hint']</code>. Those two rows are every report in #4471, 379 and 33, and they add to the 412 the ticket holds.</p>
+<h2>Why the hint cause survives the parser fix</h2>
+<p><code>booking-v2</code> prints <code>DD/MM/YYYY</code> under its date field, and <code>booking-v3</code> prints <code>MM/DD/YYYY</code>. The three tenants on <code>booking-v3</code> all write the day first. Their people type the month first, because the hint tells them to, and the form stores it the tenant's way. Every report in this cause came through the form and through no other channel.</p>
+<p>So these dates are wrong in the opposite direction from the rest of the ticket. Teach the parser to read each tenant's order and this group gets read the tenant's way too, which is not the way it was typed. The hint and the reader have to agree first: either the hint matches how the form reads, or the form reads what the hint promised.</p>
+<h2>The one-day reports, counted inside <code>parser</code></h2>
+<p>Five reports describe a date one day out, not a swap. A swap turns 7 April into 4 July: the two numbers trade places. These have no second number to trade:</p>
+<ul><li><code>R-41202</code> — the invite says Tuesday 12 May, the calendar says Monday 11 May. 12 and 11 are not each other's transpose.</li><li><code>R-41620</code> — Tuesday 6 October showed as Monday.</li><li><code>R-41344</code> — the client in Lisbon got Tuesday, the client in Toronto got Monday, for one meeting.</li><li><code>R-41209</code> — every booking in June is one day off, and only June.</li><li><code>R-41236</code> — the invite arrived before the booking was made.</li></ul>
+<p>They are not a third cause, and they get no ticket of their own, because the kb does not file them as one. <code>causeOf</code> reads the tenant and the channel and never the words, so it files all five under <code>parser</code>. The desk had already read them differently and kept the list in <code>desk-notes.json</code>, and <code>readAs</code> counts them where they are filed and footnotes them there. That is what the table above prints. Two timezones disagreeing about which day it is, and one month behaving differently from the others, point at an offset. Whoever fixes the parser will still see these five.</p>
+<h2>What the ticket's own table already shows</h2>
+<p>The incident page claims one cause in its words. Its own table, built from the data at render time, prints two, and flags the second as <em>not this ticket — no ticket of its own</em>. It has been doing that since before this page existed. The table was right and the words were not:</p>
+<p class="sum"><strong>412</strong> reports merged into #4471 · <strong>2</strong> causes</p>
+<table><thead><tr><th>cause</th><th>reports</th><th>tagged as</th><th>tenants</th><th>seen</th><th></th></tr></thead><tbody>
+<tr><td><code>parser</code></td><td>379</td><td class="tags">parser ×356 · hint ×23</td><td>11</td><td>2026-04-01 → 2026-10-04</td><td>#4471</td></tr>
+<tr class="wrong"><td><code>hint</code></td><td>33</td><td class="tags">hint ×18 · parser ×15</td><td>3</td><td>2026-04-17 → 2026-09-22</td><td>not this ticket — no ticket of its own</td></tr>
+</tbody></table><p class="note">5 reports read as a one-day move; filed under <code>parser</code> by tenant.</p>
+<h2>What to do</h2>
+<ol><li>Fix the two causes in two changes, not one. #4471 stays the parser ticket, and its fix closes the <code>parser</code> row apart from the five one-day reports counted inside it.</li><li>Ship the <code>hint</code> fix in the same release as the parser fix. On its own, each of the two moves that group from wrong to differently wrong.</li><li>Leave the reports where they are. The ticket a report belongs to is <code>mergedInto</code>, and moving a report out of #4471 would take it out of the desk's view of #4471 altogether. Both causes are counted here against the export exactly as it was exported.</li><li>Decision <a href="/kb/decisions/0001-dedupe-by-subject">0001</a> merges on the subject line alone and accepts that one bug can land in several tickets. The reverse happened here. A decision is never edited once accepted, so this needs a new record, not a correction of that one.</li></ol>
+<h2>What this page does not settle</h2>
+<ul><li>Which offset moves the five one-day reports. They name two timezones and one month; that is enough to tell them apart from a swap, not enough to name their cause.</li><li>Whether more reports belong with those five. The list is the desk's own. Pattern matching over the bodies finds four of them and misses <code>R-41236</code>, so the real number is a question for whoever reads every body, not for a regular expression.</li></ul>
+<p class="stamp">desk ref <b>DR-VMC5-QD10</b></p>
+</main>
+<footer>Pages are written by people. Tables and charts are built from data at render time.</footer>
+</div>
+</body>
+</html>
