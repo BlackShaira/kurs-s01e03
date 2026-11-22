@@ -20,8 +20,8 @@ anything: the merge rule never reads a body, so a ticket can only ever be as sha
 subject lines, and these subject lines are shared across both causes.
 
 <Callout kind="warn">
-Fixing the parser closes most of this ticket, leaves the second cause open, and can make it
-worse.
+Closed 5 October. The parser was fixed and the second cause was closed as won't fix. The counts
+below are the ticket as it was merged, and closing it does not change them.
 </Callout>
 
 ## The causes, and the ticket each one has
@@ -38,6 +38,18 @@ One ticket per cause, and which ticket covers which:
 
 `causes.ts` declares two causes and no more: `export const CAUSES = ['parser', 'hint']`. Those
 two rows are every report in #4471, 379 and 33, and they add to the 412 the ticket holds.
+
+## How the desk closed it
+
+#4471 was closed on 5 October, with one resolution per cause:
+
+- `parser`, 379 reports — fixed, in `fix(dates): parse dd/mm for eu locales`. Ticket #1 in this repo is closed as done.
+- `hint`, 33 reports — won't fix: `booking-v3` was retired, so the cause goes out with the form it came from. Ticket #2 in this repo is closed as not planned.
+
+The warning this page carried held. The parser fix is exactly *read each tenant's own order*,
+which is what would have moved the `hint` reports from wrong to differently wrong. The desk
+settled that by retiring the form rather than by making the hint and the reader agree, so the
+conflict the two causes had with each other went away with `booking-v3`.
 
 ## Why the hint cause survives the parser fix
 
@@ -78,18 +90,18 @@ doing that since before this page existed. The table was right and the words wer
 
 <CauseTable ticket={4471} />
 
-## What to do
+## What is left after the close
 
-1. Fix the two causes in two changes, not one. #4471 stays the parser ticket, and its fix closes
-   the `parser` row apart from the five one-day reports counted inside it.
-2. Ship the `hint` fix in the same release as the parser fix. On its own, each of the two moves
-   that group from wrong to differently wrong.
-3. Leave the reports where they are. The ticket a report belongs to is `mergedInto`, and moving a
+1. The five one-day reports. The parser fix reads each tenant's order, and these five are not a
+   swap in either order, so whoever reads them will still find a date one day out. They were
+   counted inside the `parser` row and they are not closed by its fix.
+2. Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges on the subject line alone and
+   accepts that one bug can land in several tickets. The reverse happened here: two bugs landed
+   in one. A decision is never edited once accepted, so this needs a new record, not a correction
+   of that one.
+3. The reports stay where they are. The ticket a report belongs to is `mergedInto`, and moving a
    report out of #4471 would take it out of the desk's view of #4471 altogether. Both causes are
-   counted here against the export exactly as it was exported.
-4. Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges on the subject line alone and
-   accepts that one bug can land in several tickets. The reverse happened here. A decision is
-   never edited once accepted, so this needs a new record, not a correction of that one.
+   counted here against the export exactly as it was exported, before and after the close.
 
 ## What this page does not settle
 

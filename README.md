@@ -6,10 +6,13 @@ with how many reports it covers, and adds the page that works the split out to t
 
 ## The tickets
 
-| cause on the kb | reports | ticket |
-|---|---|---|
-| `parser` | 379 | [issue #1](../../issues/1) · on the kb this cause is #4471 itself |
-| `hint` | 33 | [issue #2](../../issues/2) · the cause that had no ticket of its own |
+| cause on the kb | reports | ticket | how the desk closed it |
+|---|---|---|---|
+| `parser` | 379 | [issue #1](../../issues/1) | fixed, in `fix(dates): parse dd/mm for eu locales` |
+| `hint` | 33 | [issue #2](../../issues/2) | won't fix: `booking-v3` was retired |
+
+#4471 was closed on 5 October. Both tickets here are closed to match, each with the desk's own
+resolution. The counts are the ticket as it was merged, and closing it does not change them.
 
 379 + 33 = 412, every report counted once. The two causes are the two in
 `src/lib/kb/causes.ts`: `export const CAUSES = ['parser', 'hint']`.
